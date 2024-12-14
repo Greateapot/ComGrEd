@@ -1,7 +1,6 @@
-import 'package:comgred/src/features/test/data/models/models.dart';
 import 'package:comgred/src/features/test/presentation/widgets/widgets.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:multi_split_view/multi_split_view.dart';
 
 class TestView extends StatefulWidget {
   const TestView({super.key});
@@ -11,112 +10,88 @@ class TestView extends StatefulWidget {
 }
 
 class _TestViewState extends State<TestView> {
-  /// O-points (always exists | hideable)
-  late final List<Point> points = [
-    const Point(id: 'O', x: 0, y: 0, z: 0),
-    const Point(id: 'Ox10', x: 10, y: 0, z: 0),
-    const Point(id: 'Oy10', x: 0, y: 10, z: 0),
-    const Point(id: 'Oz10', x: 0, y: 0, z: 10),
-  ];
+  late final MultiSplitViewController _multiSplitViewController;
 
-  /// O-lines (always exists | hideable)
-  late final List<Line> lines = [
-    const Line(firstPointId: 'O', lastPointId: 'Ox10', color: Colors.red),
-    const Line(firstPointId: 'O', lastPointId: 'Oy10', color: Colors.green),
-    const Line(firstPointId: 'O', lastPointId: 'Oz10', color: Colors.blue),
-  ];
-
-  /// Points
-  late final List<Point> foregroundPoints = [
-    const Point(id: 'A', x: 0, y: 0, z: 4),
-    const Point(id: 'B', x: 4, y: 0, z: 4),
-    const Point(id: 'C', x: 4, y: 0, z: 0),
-    const Point(id: 'D', x: 0, y: 0, z: 0),
-    const Point(id: 'E', x: 0, y: 3, z: 4),
-    const Point(id: 'F', x: 4, y: 3, z: 4),
-    const Point(id: 'G', x: 4, y: 3, z: 0),
-    const Point(id: 'H', x: 0, y: 3, z: 0),
-  ];
-
-  /// Lines
-  late final List<Line> foregroundLines = [
-    const Line(firstPointId: 'A', lastPointId: 'B'), // AB
-    const Line(firstPointId: 'B', lastPointId: 'C'), // BC
-    const Line(firstPointId: 'C', lastPointId: 'D'), // CD
-    const Line(firstPointId: 'D', lastPointId: 'A'), // DA
-
-    const Line(firstPointId: 'E', lastPointId: 'F'), // EF
-    const Line(firstPointId: 'F', lastPointId: 'G'), // FG
-    const Line(firstPointId: 'G', lastPointId: 'H'), // GH
-    const Line(firstPointId: 'H', lastPointId: 'E'), // HE
-
-    const Line(firstPointId: 'A', lastPointId: 'E'), // EA
-    const Line(firstPointId: 'B', lastPointId: 'F'), // FB
-    const Line(firstPointId: 'C', lastPointId: 'G'), // GC
-    const Line(firstPointId: 'D', lastPointId: 'H'), // HD
-  ];
-
-  final double minz = 1;
-  final double maxz = 10000;
-
-  final double basef = -45;
-  final double baset = 45;
-  final double basez = 30;
-
-  late double f = basef;
-  late double t = baset;
-  late double z = basez;
-
-  void onPointerSignal(PointerSignalEvent event) {
-    if (event is PointerScrollEvent) {
-      // print(event);
-      setState(() {
-        final z = this.z + event.scrollDelta.dy / 100;
-        if (z < minz || z > maxz) return;
-        this.z = z;
-        // print('update z: $z');
-      });
-    }
+  @override
+  void initState() {
+    _multiSplitViewController = MultiSplitViewController(
+      areas: [
+        Area(flex: 3, min: 2, max: 3, builder: lineListViewBuilder),
+        Area(flex: 7, min: 6, max: 8, builder: viewBuilder),
+        Area(flex: 2, min: 2, max: 3, builder: propsBuilder),
+      ],
+    );
+    super.initState();
   }
 
-  void onPanUpdate(DragUpdateDetails details) {
-    // print(details);
-    setState(() {
-      t = (t + details.delta.dy) % 360;
-      f = (f + details.delta.dx) % 360;
-      // print('update t: $t; f: $f');
-    });
+  @override
+  void dispose() {
+    _multiSplitViewController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final MediaQueryData mediaQueryData = MediaQuery.of(context);
+    final colorScheme = Theme.of(context).colorScheme;
 
-    return Listener(
-      onPointerSignal: onPointerSignal,
-      child: GestureDetector(
-        onPanUpdate: onPanUpdate,
-        child: Scaffold(
-          body: RepaintBoundary(
-            child: CustomPaint(
-              size: mediaQueryData.size,
-              foregroundPainter: TestPainter(
-                points: foregroundPoints,
-                lines: foregroundLines,
-                f: f,
-                t: t,
-                z: z,
-              ),
-              painter: TestPainter(
-                points: points,
-                lines: lines,
-                f: basef,
-                t: baset,
-                z: basez,
-              ),
-            ),
+    return Scaffold(
+      body: MultiSplitViewTheme(
+        data: MultiSplitViewThemeData(
+          dividerPainter: DividerPainters.grooved1(
+            color: colorScheme.onPrimaryContainer.withOpacity(0.38),
+            highlightedColor: colorScheme.onPrimaryContainer,
           ),
         ),
+        child: MultiSplitView(controller: _multiSplitViewController),
+      ),
+    );
+  }
+
+  Widget lineListViewBuilder(BuildContext context, Area area) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Container(
+      margin: const EdgeInsets.all(8.0),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(4.0),
+        color: colorScheme.secondaryContainer,
+        border: Border.all(color: colorScheme.onSecondaryContainer),
+      ),
+      child: const TestLineListView(),
+    );
+  }
+
+  Widget viewBuilder(BuildContext context, Area area) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Container(
+      margin: const EdgeInsets.all(8.0),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(4.0),
+        color: colorScheme.primaryContainer,
+        border: Border.all(color: colorScheme.onPrimaryContainer),
+      ),
+      child: RepaintBoundary(child: TestPaint()),
+    );
+  }
+
+  Widget propsBuilder(BuildContext context, Area area) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Container(
+      margin: const EdgeInsets.all(8.0),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(4.0),
+        color: colorScheme.tertiaryContainer,
+        border: Border.all(color: colorScheme.onTertiaryContainer),
+      ),
+      child: TestProps(
+        props: [
+          TestPropData(
+            icon: const Icon(Icons.file_present_outlined),
+            builder: (context) => const SaveloadTestProp(),
+          ),
+        ],
       ),
     );
   }
