@@ -4,5 +4,9 @@
 			"path": ".",
 			"name": "ComGrEd",
 		},
+		{
+			"path": "./lib/src/features/editor",
+			"name": "Editor",
+		},
 	],
 }

@@ -1,6 +1,8 @@
 include: package:flutter_lints/flutter.yaml
 
 analyzer:
+  errors:
+    use_string_in_part_of_directives: ignore
   exclude: 
     - '**/*.g.dart'
 

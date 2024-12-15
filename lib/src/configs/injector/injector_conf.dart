@@ -5,7 +5,7 @@ import 'injectors.dart';
 final getIt = GetIt.I;
 
 void configureDepedencies() {
-  TestDependency.init();
+  EditorDependency.init();
 
   getIt.registerLazySingleton(
     () => AppRouteConf(),
