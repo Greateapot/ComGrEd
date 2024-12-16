@@ -20,6 +20,70 @@ class ProjectBloc extends Bloc<ProjectEvent, ProjectState> {
     on<ProjectSelectLinesEvent>(_onProjectSelectLinesEvent);
     on<ProjectUnselectLinesEvent>(_onProjectUnselectLinesEvent);
     on<ProjectRebuildEvent>(_onProjectRebuildEvent);
+
+    on<ProjectAddLineEvent>(_onProjectAddLineEvent);
+    on<ProjectRemoveLineEvent>(_onProjectRemoveLineEvent);
+    on<ProjectRemoveLinesEvent>(_onProjectRemoveLinesEvent);
+    on<ProjectEditLineEvent>(_onProjectEditLineEvent);
+  }
+
+  void _onProjectAddLineEvent(
+    ProjectAddLineEvent event,
+    Emitter<ProjectState> emit,
+  ) {
+    final Line line = Line(
+      firstPoint: Point(
+        x: event.line.firstPoint.x,
+        y: event.line.firstPoint.y,
+        z: event.line.firstPoint.z,
+      ),
+      lastPoint: Point(
+        x: event.line.lastPoint.x,
+        y: event.line.lastPoint.y,
+        z: event.line.lastPoint.z,
+      ),
+    );
+
+    state.lines.add(line);
+
+    add(const ProjectRebuildEvent());
+  }
+
+  void _onProjectRemoveLineEvent(
+    ProjectRemoveLineEvent event,
+    Emitter<ProjectState> emit,
+  ) {
+    if (!state.lines.contains(event.line)) return;
+
+    state.lines.remove(event.line);
+    add(const ProjectRebuildEvent());
+  }
+
+  void _onProjectRemoveLinesEvent(
+    ProjectRemoveLinesEvent event,
+    Emitter<ProjectState> emit,
+  ) {
+    for (var line in state.group) {
+      state.lines.remove(line);
+    }
+    state.group.clear();
+    add(const ProjectRebuildEvent());
+  }
+
+  void _onProjectEditLineEvent(
+    ProjectEditLineEvent event,
+    Emitter<ProjectState> emit,
+  ) {
+    if (!state.lines.contains(event.oldLine)) return;
+
+    event.oldLine.firstPoint.x = event.newLine.firstPoint.x;
+    event.oldLine.firstPoint.y = event.newLine.firstPoint.y;
+    event.oldLine.firstPoint.z = event.newLine.firstPoint.z;
+    event.oldLine.lastPoint.x = event.newLine.lastPoint.x;
+    event.oldLine.lastPoint.y = event.newLine.lastPoint.y;
+    event.oldLine.lastPoint.z = event.newLine.lastPoint.z;
+
+    add(const ProjectRebuildEvent());
   }
 
   Future<void> _onProjectSaveProjectEvent(

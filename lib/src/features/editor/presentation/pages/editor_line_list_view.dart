@@ -1,5 +1,4 @@
-import 'package:comgred/src/core/utils/logger.dart';
-import 'package:comgred/src/features/editor/presentation/bloc/bloc.dart';
+import 'package:comgred/src/features/editor/presentation/presentation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -11,7 +10,7 @@ class EditorLineListView extends StatelessWidget {
       BlocBuilder<ProjectBloc, ProjectState>(builder: builder);
 
   Widget builder(BuildContext context, ProjectState state) {
-    // final ColorScheme colorScheme = Theme.of(context).colorScheme;
+    final ColorScheme colorScheme = Theme.of(context).colorScheme;
     final TextTheme textTheme = Theme.of(context).textTheme;
 
     return Column(
@@ -35,67 +34,36 @@ class EditorLineListView extends StatelessWidget {
           ),
           title: Text(
             'Список линий',
-            style: textTheme.titleMedium,
+            style: textTheme.titleMedium
+                ?.copyWith(color: colorScheme.onSecondaryContainer),
           ),
-          trailing: Wrap(
-            children: [
-              IconButton(
-                onPressed: () {
-                  logger.i('on add');
-                },
-                icon: const Icon(Icons.add_outlined),
-              ),
-              Visibility(
-                visible: state.group.isNotEmpty,
-                child: IconButton(
-                  onPressed: () {
-                    logger.i('on delete group');
-                  },
-                  iconSize: 20.0,
-                  icon: const Icon(Icons.delete_outlined),
-                ),
-              ),
-            ],
+          trailing: Visibility(
+            visible: state.group.isNotEmpty,
+            child: IconButton(
+              onPressed: () => context
+                  .read<ProjectBloc>()
+                  .add(const ProjectRemoveLinesEvent()),
+              iconSize: 20.0,
+              icon: const Icon(Icons.delete_outlined),
+            ),
           ),
         ),
         Expanded(
           child: ListView.builder(
-            itemCount: state.lines.length,
+            itemCount: state.lines.length + 1,
             itemBuilder: (context, index) {
-              final line = state.lines[index];
+              final line = state.lines.elementAtOrNull(index);
 
-              return ListTile(
-                leading: Checkbox(
-                  value: state.group.contains(line),
-                  onChanged: (value) {
-                    if (value == null) return;
-                    context.read<ProjectBloc>().add(
-                          value
-                              ? ProjectSelectLineEvent(line: line)
-                              : ProjectUnselectLineEvent(line: line),
-                        );
-                  },
-                ),
-                title: Text('Line#${line.hashCode}'),
-                trailing: Wrap(
-                  children: [
-                    IconButton(
-                      onPressed: () {
-                        logger.i('on edit');
-                      },
-                      iconSize: 20.0,
-                      icon: const Icon(Icons.edit_outlined),
-                    ),
-                    IconButton(
-                      onPressed: () {
-                        logger.i('on delete');
-                      },
-                      iconSize: 20.0,
-                      icon: const Icon(Icons.delete_outlined),
-                    ),
-                  ],
-                ),
-              );
+              if (line == null) {
+                return const EditorLineTile(isAdd: true);
+              } else {
+                final isSelected = state.group.contains(line);
+
+                return EditorLineTile(
+                  line: line,
+                  isSelected: isSelected,
+                );
+              }
             },
           ),
         ),

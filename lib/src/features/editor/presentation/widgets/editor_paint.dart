@@ -1,3 +1,4 @@
+import 'package:comgred/src/features/editor/data/models/models.dart';
 import 'package:comgred/src/features/editor/presentation/bloc/bloc.dart';
 import 'package:comgred/src/features/editor/presentation/widgets/widgets.dart';
 import 'package:flutter/material.dart';
@@ -15,6 +16,37 @@ class EditorPaint extends StatefulWidget {
 class _EditorPaintState extends State<EditorPaint> {
   late final FocusNode _focusNode;
   final double onKeyEventStep = 5;
+
+  final List<Line> _fgPainter2D = <Line>[
+    Line(
+      firstPoint: Point(x: 0, y: 0, z: 0),
+      lastPoint: Point(x: 10000, y: 0, z: 0),
+      color: Colors.redAccent,
+    ),
+    Line(
+      firstPoint: Point(x: 0, y: 0, z: 0),
+      lastPoint: Point(x: 0, y: 10000, z: 0),
+      color: Colors.greenAccent,
+    ),
+  ];
+
+  final List<Line> _fgPainter3D = <Line>[
+    Line(
+      firstPoint: Point(x: 0, y: 0, z: 0),
+      lastPoint: Point(x: 10000, y: 0, z: 0),
+      color: Colors.redAccent,
+    ),
+    Line(
+      firstPoint: Point(x: 0, y: 0, z: 0),
+      lastPoint: Point(x: 0, y: 10000, z: 0),
+      color: Colors.greenAccent,
+    ),
+    Line(
+      firstPoint: Point(x: 0, y: 0, z: 0),
+      lastPoint: Point(x: 0, y: 0, z: 10000),
+      color: Colors.blueAccent,
+    ),
+  ];
 
   void setRotation(BuildContext context, double deltaX, double deltaY) {
     final GlobalCubit globalCubit = context.read<GlobalCubit>();
@@ -100,34 +132,49 @@ class _EditorPaintState extends State<EditorPaint> {
         final ProjectState projectState = context.watch<ProjectBloc>().state;
         final GlobalState globalState = context.watch<GlobalCubit>().state;
 
-        final CustomPainter painter;
-
-        if (globalState.mode == GlobalMode.threeDimensional) {
-          painter = EditorPainter3D(
-            lines: projectState.lines,
-            group: projectState.group,
-            angleX: globalState.angleX,
-            angleY: globalState.angleY,
-            scale: globalState.scale,
-            distance: globalState.distance,
-            version: projectState.version,
-          );
-        } else {
-          painter = EditorPainter2D(
-            lines: projectState.lines,
-            group: projectState.group,
-            angle: globalState.angleX,
-            scale: globalState.scale,
-            version: projectState.version,
-          );
-        }
-
         final MediaQueryData mediaQueryData = MediaQuery.of(context);
 
-        Widget child = CustomPaint(
-          size: mediaQueryData.size,
-          painter: painter,
-        );
+        late Widget child;
+
+        if (globalState.mode == GlobalMode.threeDimensional) {
+          child = CustomPaint(
+            size: mediaQueryData.size,
+            foregroundPainter: EditorPainter3D(
+              lines: projectState.lines,
+              group: projectState.group,
+              angleX: globalState.angleX,
+              angleY: globalState.angleY,
+              scale: globalState.scale,
+              distance: globalState.distance,
+              version: projectState.version,
+            ),
+            painter: EditorPainter3D(
+              lines: _fgPainter3D,
+              angleX: globalState.angleX,
+              angleY: globalState.angleY,
+              scale: globalState.scale,
+              distance: globalState.distance,
+              version: projectState.version,
+            ),
+          );
+        } else {
+          child = CustomPaint(
+            size: mediaQueryData.size,
+            foregroundPainter: EditorPainter2D(
+              lines: projectState.lines,
+              group: projectState.group,
+              angle: globalState.angleX,
+              scale: globalState.scale,
+              version: projectState.version,
+            ),
+            painter: EditorPainter2D(
+              lines: _fgPainter2D,
+              angle: 0,
+              scale: globalState.scale,
+              version: projectState.version,
+            ),
+          );
+        }
 
         if (true) child = withKeyEvents(context, child);
         if (true) child = withPointerSignal(context, child);

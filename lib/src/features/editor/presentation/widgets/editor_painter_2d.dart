@@ -9,7 +9,7 @@ class EditorPainter2D extends CustomPainter {
   EditorPainter2D({
     super.repaint,
     required this.lines,
-    required this.group,
+    this.group,
     required this.angle,
     required this.scale,
     required this.version,
@@ -19,7 +19,7 @@ class EditorPainter2D extends CustomPainter {
   final List<Line> lines;
 
   /// selected lines (group)
-  final List<Line> group;
+  final List<Line>? group;
 
   /// angle (rotate)
   final double angle;
@@ -72,7 +72,9 @@ class EditorPainter2D extends CustomPainter {
         -lastPointVector.y + center.height,
       );
 
-      paint.color = group.contains(line) ? Colors.redAccent : Colors.black;
+      paint.color = group != null && group!.contains(line)
+          ? Colors.yellowAccent
+          : line.color ?? Colors.black;
 
       canvas.drawLine(firstPointOffset, lastPointOffset, paint);
     }

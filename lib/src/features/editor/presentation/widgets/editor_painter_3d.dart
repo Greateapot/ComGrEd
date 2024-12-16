@@ -9,7 +9,7 @@ class EditorPainter3D extends CustomPainter {
   EditorPainter3D({
     super.repaint,
     required this.lines,
-    required this.group,
+    this.group,
     required this.angleY,
     required this.angleX,
     required this.scale,
@@ -21,7 +21,7 @@ class EditorPainter3D extends CustomPainter {
   final List<Line> lines;
 
   /// selected lines (group)
-  final List<Line> group;
+  final List<Line>? group;
 
   /// angle x (x-rotate)
   final double angleX;
@@ -61,15 +61,6 @@ class EditorPainter3D extends CustomPainter {
         line.firstPoint.z,
         1,
       );
-
-      firstPointVector.applyMatrix4(matrix);
-      firstPointVector.xyzw = firstPointVector / firstPointVector.w;
-
-      final firstPointOffset = Offset(
-        firstPointVector.x + center.width,
-        -firstPointVector.y + center.height,
-      );
-
       final lastPointVector = Vector4(
         line.lastPoint.x,
         line.lastPoint.y,
@@ -77,18 +68,90 @@ class EditorPainter3D extends CustomPainter {
         1,
       );
 
+      firstPointVector.applyMatrix4(matrix);
       lastPointVector.applyMatrix4(matrix);
-      lastPointVector.xyzw = lastPointVector / lastPointVector.w;
 
-      final lastPointOffset = Offset(
-        lastPointVector.x + center.width,
-        -lastPointVector.y + center.height,
-      );
+      var firstPointX = center.width + firstPointVector.x / firstPointVector.w;
+      var firstPointY = center.height - firstPointVector.y / firstPointVector.w;
 
-      paint.color = group.contains(line) ? Colors.redAccent : Colors.black;
+      var lastPointX = center.width + lastPointVector.x / lastPointVector.w;
+      var lastPointY = center.height - lastPointVector.y / lastPointVector.w;
+
+      late final Offset firstPointOffset;
+      late final Offset lastPointOffset;
+
+      /// Если обе точки за границами экрана, то ничего не рисовать
+      if ((firstPointX > size.width || firstPointX < 0) &&
+          (firstPointY > size.width || firstPointY < 0) &&
+          (lastPointX > size.width || lastPointX < 0) &&
+          (lastPointY > size.width || lastPointY < 0)) {
+        continue;
+      }
+
+      /// Если обе точки за камерой, то ничего не рисовать
+      else if (firstPointVector.w < 0 && lastPointVector.w < 0) {
+        continue;
+      }
+
+      /// Если обе точки перед камерой, то провести линию между точками
+      else if (firstPointVector.w > 0 && lastPointVector.w > 0) {
+        firstPointOffset = Offset(firstPointX, firstPointY);
+        lastPointOffset = Offset(lastPointX, lastPointY);
+      }
+
+      /// Если первая точка за камерой, то провести линию от второй
+      /// точки до границы экрана так, чтобы линия уходила в точку схода
+      else if (firstPointVector.w < 0 && lastPointVector.w > 0) {
+        firstPointOffset = recalculateCoordinates(
+          firstPointX,
+          firstPointY,
+          lastPointX,
+          lastPointY,
+          size,
+        );
+        lastPointOffset = Offset(lastPointX, lastPointY);
+      }
+
+      /// Если вторая точка за камерой, то провести линию от первой
+      /// точки до границы экрана так, чтобы линия уходила в точку сход
+      else if (firstPointVector.w > 0 && lastPointVector.w < 0) {
+        firstPointOffset = Offset(firstPointX, firstPointY);
+        lastPointOffset = recalculateCoordinates(
+          lastPointX,
+          lastPointY,
+          firstPointX,
+          firstPointY,
+          size,
+        );
+      }
+
+      paint.color = group != null && group!.contains(line)
+          ? Colors.yellowAccent
+          : line.color ?? Colors.black;
 
       canvas.drawLine(firstPointOffset, lastPointOffset, paint);
     }
+  }
+
+  Offset recalculateCoordinates(
+    double x1,
+    double y1,
+    double x2,
+    double y2,
+    Size size,
+  ) {
+    final double wallX = x2 - x1 < 0 ? 0 : size.width;
+    final double wallY = y2 - y1 < 0 ? 0 : size.height;
+    double ytox = (wallX * y2 - wallX * y1 - x1 * y2 + y1 * x2) / (x2 - x1);
+    double xtoy = (wallY * x1 - wallY * x2 - x1 * y2 + y1 * x2) / (y1 - y2);
+
+    if (ytox > 0 && ytox < size.height) {
+      xtoy = wallX;
+    } else {
+      ytox = wallY;
+    }
+
+    return Offset(xtoy, ytox);
   }
 
   @override
