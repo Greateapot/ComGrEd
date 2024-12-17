@@ -258,23 +258,23 @@ class _RotationMenuFormState extends State<RotationMenuForm> {
   }
 
   void listener(BuildContext context, RotationState state) {
-    if (_angleXController.text != state.angleX.toStringAsFixed(3)) {
-      _angleXController.text = state.angleX.toStringAsFixed(3);
+    if (_angleXController.text != state.angleX.toString()) {
+      _angleXController.text = state.angleX.toString();
     }
-    if (_angleYController.text != state.angleY.toStringAsFixed(3)) {
-      _angleYController.text = state.angleY.toStringAsFixed(3);
+    if (_angleYController.text != state.angleY.toString()) {
+      _angleYController.text = state.angleY.toString();
     }
-    if (_angleZController.text != state.angleZ.toStringAsFixed(3)) {
-      _angleZController.text = state.angleZ.toStringAsFixed(3);
+    if (_angleZController.text != state.angleZ.toString()) {
+      _angleZController.text = state.angleZ.toString();
     }
-    if (_pointXController.text != state.pointX.toStringAsFixed(3)) {
-      _pointXController.text = state.pointX.toStringAsFixed(3);
+    if (_pointXController.text != state.pointX.toString()) {
+      _pointXController.text = state.pointX.toString();
     }
-    if (_pointYController.text != state.pointY.toStringAsFixed(3)) {
-      _pointYController.text = state.pointY.toStringAsFixed(3);
+    if (_pointYController.text != state.pointY.toString()) {
+      _pointYController.text = state.pointY.toString();
     }
-    if (_pointZController.text != state.pointZ.toStringAsFixed(3)) {
-      _pointZController.text = state.pointZ.toStringAsFixed(3);
+    if (_pointZController.text != state.pointZ.toString()) {
+      _pointZController.text = state.pointZ.toString();
     }
   }
 }

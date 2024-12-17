@@ -177,14 +177,14 @@ class _ProjectionMenuFormState extends State<ProjectionMenuForm> {
   }
 
   void listener(BuildContext context, ProjectionState state) {
-    if (_pController.text != state.p.toStringAsFixed(3)) {
-      _pController.text = state.p.toStringAsFixed(3);
+    if (_pController.text != state.p.toString()) {
+      _pController.text = state.p.toString();
     }
-    if (_qController.text != state.q.toStringAsFixed(3)) {
-      _qController.text = state.q.toStringAsFixed(3);
+    if (_qController.text != state.q.toString()) {
+      _qController.text = state.q.toString();
     }
-    if (_rController.text != state.r.toStringAsFixed(3)) {
-      _rController.text = state.r.toStringAsFixed(3);
+    if (_rController.text != state.r.toString()) {
+      _rController.text = state.r.toString();
     }
   }
 }

@@ -169,14 +169,14 @@ class _ScaleMenuFormState extends State<ScaleMenuForm> {
   }
 
   void listener(BuildContext context, ScaleState state) {
-    if (_xController.text != state.x.toStringAsFixed(3)) {
-      _xController.text = state.x.toStringAsFixed(3);
+    if (_xController.text != state.x.toString()) {
+      _xController.text = state.x.toString();
     }
-    if (_yController.text != state.y.toStringAsFixed(3)) {
-      _yController.text = state.y.toStringAsFixed(3);
+    if (_yController.text != state.y.toString()) {
+      _yController.text = state.y.toString();
     }
-    if (_zController.text != state.z.toStringAsFixed(3)) {
-      _zController.text = state.z.toStringAsFixed(3);
+    if (_zController.text != state.z.toString()) {
+      _zController.text = state.z.toString();
     }
   }
 }

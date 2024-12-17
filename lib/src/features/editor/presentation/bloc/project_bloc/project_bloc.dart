@@ -22,6 +22,7 @@ class ProjectBloc extends Bloc<ProjectEvent, ProjectState> {
     on<ProjectRebuildEvent>(_onProjectRebuildEvent);
 
     on<ProjectAddLineEvent>(_onProjectAddLineEvent);
+    on<ProjectAddLinesEvent>(_onProjectAddLinesEvent);
     on<ProjectRemoveLineEvent>(_onProjectRemoveLineEvent);
     on<ProjectRemoveLinesEvent>(_onProjectRemoveLinesEvent);
     on<ProjectEditLineEvent>(_onProjectEditLineEvent);
@@ -45,6 +46,15 @@ class ProjectBloc extends Bloc<ProjectEvent, ProjectState> {
     );
 
     state.lines.add(line);
+
+    add(const ProjectRebuildEvent());
+  }
+
+  void _onProjectAddLinesEvent(
+    ProjectAddLinesEvent event,
+    Emitter<ProjectState> emit,
+  ) {
+    state.lines.addAll(event.lines);
 
     add(const ProjectRebuildEvent());
   }

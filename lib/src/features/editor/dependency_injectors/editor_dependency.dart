@@ -12,6 +12,7 @@ class EditorDependency {
     getIt.registerFactory(() => GlobalCubit());
     getIt.registerFactory(() => RotationCubit());
     getIt.registerFactory(() => ProjectionCubit());
+    getIt.registerFactory(() => LandscapeCubit());
     getIt.registerFactory(() => OffsetCubit());
     getIt.registerFactory(() => ScaleCubit());
     getIt.registerFactory(() => MirrorCubit());

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-class DoubleFormField extends StatelessWidget {
-  const DoubleFormField({
+class IntFormField extends StatelessWidget {
+  const IntFormField({
     super.key,
     required this.title,
     required this.onChanged,
@@ -15,20 +15,20 @@ class DoubleFormField extends StatelessWidget {
   });
 
   final String title;
-  final double? initialValue;
-  final double min;
-  final double max;
+  final int? initialValue;
+  final int min;
+  final int max;
   final EdgeInsets padding;
   final TextStyle? titleStyle;
   final TextEditingController? controller;
-  final void Function(double value) onChanged;
+  final void Function(int value) onChanged;
 
   String? validator(String? value) {
     if (value == null || value.isEmpty) {
       return 'Value can\'t be empty!';
     }
 
-    final result = double.tryParse(value);
+    final result = int.tryParse(value);
 
     if (result == null) {
       return 'Invalid value!';
@@ -59,21 +59,17 @@ class DoubleFormField extends StatelessWidget {
             child: TextFormField(
               controller: controller,
               initialValue: initialValue?.toString(),
-              keyboardType: const TextInputType.numberWithOptions(
-                signed: true,
-                decimal: true,
-              ),
+              keyboardType: const TextInputType.numberWithOptions(signed: true),
               textAlign: TextAlign.center,
               textAlignVertical: TextAlignVertical.center,
               autovalidateMode: AutovalidateMode.onUserInteraction,
               validator: validator,
               inputFormatters: [
-                FilteringTextInputFormatter.deny(',', replacementString: '.'),
-                FilteringTextInputFormatter.allow(RegExp(r'^-?\d*\.?\d*')),
+                FilteringTextInputFormatter.allow(RegExp(r'^-?\d+')),
               ],
               decoration: const InputDecoration(border: OutlineInputBorder()),
               onChanged: (value) {
-                final result = double.tryParse(value);
+                final result = int.tryParse(value);
                 if (result == null) return;
 
                 onChanged(result);

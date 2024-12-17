@@ -238,17 +238,17 @@ class _GlobalMenuFormState extends State<GlobalMenuForm> {
   }
 
   void listener(BuildContext context, GlobalState state) {
-    if (_angleXController.text != state.angleX.toStringAsFixed(3)) {
-      _angleXController.text = state.angleX.toStringAsFixed(3);
+    if (_angleXController.text != state.angleX.toString()) {
+      _angleXController.text = state.angleX.toString();
     }
-    if (_angleYController.text != state.angleY.toStringAsFixed(3)) {
-      _angleYController.text = state.angleY.toStringAsFixed(3);
+    if (_angleYController.text != state.angleY.toString()) {
+      _angleYController.text = state.angleY.toString();
     }
-    if (_distanceController.text != state.distance.toStringAsFixed(3)) {
-      _distanceController.text = state.distance.toStringAsFixed(3);
+    if (_distanceController.text != state.distance.toString()) {
+      _distanceController.text = state.distance.toString();
     }
-    if (_scaleController.text != state.scale.toStringAsFixed(3)) {
-      _scaleController.text = state.scale.toStringAsFixed(3);
+    if (_scaleController.text != state.scale.toString()) {
+      _scaleController.text = state.scale.toString();
     }
   }
 }

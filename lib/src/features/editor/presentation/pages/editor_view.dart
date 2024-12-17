@@ -115,6 +115,10 @@ class _EditorViewState extends State<EditorView> {
             icon: const Icon(Icons.ac_unit_outlined),
             builder: (context) => const ProjectionMenu(),
           ),
+          EditorMenuViewData(
+            icon: const Icon(Icons.star_border_outlined),
+            builder: (context) => const LandscapeMenu(),
+          ),
         ],
       ),
     );

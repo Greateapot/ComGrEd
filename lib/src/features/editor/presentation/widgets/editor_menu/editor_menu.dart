@@ -13,3 +13,4 @@ part 'project_menu.dart';
 part 'rotation_menu.dart';
 part 'scale_menu.dart';
 part 'projection_menu.dart';
+part 'landscape_menu.dart';

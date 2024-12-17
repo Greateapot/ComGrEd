@@ -16,6 +16,14 @@ final class ProjectAddLineEvent extends ProjectEvent {
   @override
   List<Object?> get props => [line];
 }
+final class ProjectAddLinesEvent extends ProjectEvent {
+  const ProjectAddLinesEvent({required this.lines});
+
+  final List<Line> lines;
+
+  @override
+  List<Object?> get props => [lines];
+}
 
 final class ProjectEditLineEvent extends ProjectEvent {
   const ProjectEditLineEvent({
