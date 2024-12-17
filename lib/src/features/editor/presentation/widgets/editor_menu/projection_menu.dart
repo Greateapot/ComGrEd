@@ -1,26 +1,26 @@
 part of editor_menu;
 
-class OffsetMenu extends StatelessWidget {
-  const OffsetMenu({super.key});
+class ProjectionMenu extends StatelessWidget {
+  const ProjectionMenu({super.key});
 
   @override
   Widget build(BuildContext context) => BlocProvider.value(
-        value: getIt<OffsetCubit>(),
-        child: const OffsetMenuForm(),
+        value: getIt<ProjectionCubit>(),
+        child: const ProjectionMenuForm(),
       );
 }
 
-class OffsetMenuForm extends StatefulWidget {
-  const OffsetMenuForm({super.key});
+class ProjectionMenuForm extends StatefulWidget {
+  const ProjectionMenuForm({super.key});
 
   @override
-  State<OffsetMenuForm> createState() => _OffsetMenuFormState();
+  State<ProjectionMenuForm> createState() => _ProjectionMenuFormState();
 }
 
-class _OffsetMenuFormState extends State<OffsetMenuForm> {
-  late final TextEditingController _xController;
-  late final TextEditingController _yController;
-  late final TextEditingController _zController;
+class _ProjectionMenuFormState extends State<ProjectionMenuForm> {
+  late final TextEditingController _pController;
+  late final TextEditingController _qController;
+  late final TextEditingController _rController;
 
   late final GlobalKey<FormState> _formKey;
 
@@ -28,7 +28,7 @@ class _OffsetMenuFormState extends State<OffsetMenuForm> {
     final group = context.read<ProjectBloc>().state.group;
     if (group.isEmpty) return;
 
-    context.read<OffsetCubit>().applyChanges(group);
+    context.read<ProjectionCubit>().applyChanges(group);
     context.read<ProjectBloc>().add(const ProjectRebuildEvent());
   }
 
@@ -36,31 +36,32 @@ class _OffsetMenuFormState extends State<OffsetMenuForm> {
   void initState() {
     _formKey = GlobalKey<FormState>();
 
-    final state = BlocProvider.of<OffsetCubit>(context, listen: false).state;
+    final state =
+        BlocProvider.of<ProjectionCubit>(context, listen: false).state;
 
-    _xController = TextEditingController(text: state.x.toString());
-    _yController = TextEditingController(text: state.y.toString());
-    _zController = TextEditingController(text: state.z.toString());
+    _pController = TextEditingController(text: state.p.toString());
+    _qController = TextEditingController(text: state.q.toString());
+    _rController = TextEditingController(text: state.r.toString());
     super.initState();
   }
 
   @override
   void dispose() {
-    _xController.dispose();
-    _yController.dispose();
-    _zController.dispose();
+    _pController.dispose();
+    _qController.dispose();
+    _rController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<OffsetCubit, OffsetState>(
+    return BlocConsumer<ProjectionCubit, ProjectionState>(
       builder: builder,
       listener: listener,
     );
   }
 
-  Widget builder(BuildContext context, OffsetState state) {
+  Widget builder(BuildContext context, ProjectionState state) {
     final ColorScheme colorScheme = Theme.of(context).colorScheme;
     final TextTheme textTheme = Theme.of(context).textTheme;
 
@@ -74,7 +75,7 @@ class _OffsetMenuFormState extends State<OffsetMenuForm> {
         children: [
           Divider(color: colorScheme.tertiary),
           Text(
-            'Смещение группы',
+            'Проецирование группы',
             style: textTheme.titleMedium
                 ?.copyWith(color: colorScheme.onTertiaryContainer),
             textAlign: TextAlign.center,
@@ -82,40 +83,44 @@ class _OffsetMenuFormState extends State<OffsetMenuForm> {
           Divider(color: colorScheme.tertiary),
           DoubleFormField(
             padding: const EdgeInsets.all(8.0),
-            title: 'X: ',
+            title: 'P: ',
             titleStyle: textTheme.bodyMedium
                 ?.copyWith(color: colorScheme.onTertiaryContainer),
-            controller: _xController,
-            min: -100,
-            max: 100,
-            onChanged: (value) => context.read<OffsetCubit>().update(x: value),
+            controller: _pController,
+            min: 0,
+            max: 2,
+            onChanged: (value) =>
+                context.read<ProjectionCubit>().update(p: value),
           ),
           Slider(
-            value: state.x,
-            min: -100,
-            max: 100,
+            value: state.p,
+            min: 0,
+            max: 2,
             activeColor: colorScheme.tertiary,
             inactiveColor: colorScheme.onTertiary,
-            onChanged: (value) => context.read<OffsetCubit>().update(x: value),
+            onChanged: (value) =>
+                context.read<ProjectionCubit>().update(p: value),
           ),
           Divider(color: colorScheme.tertiary),
           DoubleFormField(
             padding: const EdgeInsets.all(8.0),
-            title: 'Y: ',
+            title: 'Q: ',
             titleStyle: textTheme.bodyMedium
                 ?.copyWith(color: colorScheme.onTertiaryContainer),
-            controller: _yController,
-            min: -100,
-            max: 100,
-            onChanged: (value) => context.read<OffsetCubit>().update(y: value),
+            controller: _qController,
+            min: 0,
+            max: 2,
+            onChanged: (value) =>
+                context.read<ProjectionCubit>().update(q: value),
           ),
           Slider(
-            value: state.y,
-            min: -100,
-            max: 100,
+            value: state.q,
+            min: 0,
+            max: 2,
             activeColor: colorScheme.tertiary,
             inactiveColor: colorScheme.onTertiary,
-            onChanged: (value) => context.read<OffsetCubit>().update(y: value),
+            onChanged: (value) =>
+                context.read<ProjectionCubit>().update(q: value),
           ),
           Visibility(
             visible: mode == GlobalMode.threeDimensional,
@@ -124,23 +129,23 @@ class _OffsetMenuFormState extends State<OffsetMenuForm> {
                 Divider(color: colorScheme.tertiary),
                 DoubleFormField(
                   padding: const EdgeInsets.all(8.0),
-                  title: 'Z: ',
+                  title: 'R: ',
                   titleStyle: textTheme.bodyMedium
                       ?.copyWith(color: colorScheme.onTertiaryContainer),
-                  controller: _zController,
-                  min: -100,
-                  max: 100,
+                  controller: _rController,
+                  min: 0,
+                  max: 2,
                   onChanged: (value) =>
-                      context.read<OffsetCubit>().update(z: value),
+                      context.read<ProjectionCubit>().update(r: value),
                 ),
                 Slider(
-                  value: state.z,
-                  min: -100,
-                  max: 100,
+                  value: state.r,
+                  min: 0,
+                  max: 2,
                   activeColor: colorScheme.tertiary,
                   inactiveColor: colorScheme.onTertiary,
                   onChanged: (value) =>
-                      context.read<OffsetCubit>().update(z: value),
+                      context.read<ProjectionCubit>().update(r: value),
                 ),
               ],
             ),
@@ -159,7 +164,7 @@ class _OffsetMenuFormState extends State<OffsetMenuForm> {
           ),
           Divider(color: colorScheme.tertiary),
           MaterialButton(
-            onPressed: () => context.read<OffsetCubit>().resetChanges(),
+            onPressed: () => context.read<ProjectionCubit>().resetChanges(),
             child: Text(
               'Сброс',
               style: textTheme.bodyMedium,
@@ -171,15 +176,15 @@ class _OffsetMenuFormState extends State<OffsetMenuForm> {
     );
   }
 
-  void listener(BuildContext context, OffsetState state) {
-    if (_xController.text != state.x.toStringAsFixed(3)) {
-      _xController.text = state.x.toStringAsFixed(3);
+  void listener(BuildContext context, ProjectionState state) {
+    if (_pController.text != state.p.toStringAsFixed(3)) {
+      _pController.text = state.p.toStringAsFixed(3);
     }
-    if (_yController.text != state.y.toStringAsFixed(3)) {
-      _yController.text = state.y.toStringAsFixed(3);
+    if (_qController.text != state.q.toStringAsFixed(3)) {
+      _qController.text = state.q.toStringAsFixed(3);
     }
-    if (_zController.text != state.z.toStringAsFixed(3)) {
-      _zController.text = state.z.toStringAsFixed(3);
+    if (_rController.text != state.r.toStringAsFixed(3)) {
+      _rController.text = state.r.toStringAsFixed(3);
     }
   }
 }

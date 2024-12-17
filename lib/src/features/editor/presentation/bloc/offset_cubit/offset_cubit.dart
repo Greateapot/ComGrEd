@@ -12,9 +12,9 @@ class OffsetCubit extends Cubit<OffsetState> {
     final newY = y ?? state.y;
     final newZ = z ?? state.z;
 
-    assert(newX >= -20 && newX <= 20);
-    assert(newY >= -20 && newY <= 20);
-    assert(newZ >= -20 && newZ <= 20);
+    assert(newX >= -100 && newX <= 100);
+    assert(newY >= -100 && newY <= 100);
+    assert(newZ >= -100 && newZ <= 100);
 
     emit(OffsetInitial(
       x: newX,

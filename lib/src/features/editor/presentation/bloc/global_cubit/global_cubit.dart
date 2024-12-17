@@ -11,6 +11,7 @@ class GlobalCubit extends Cubit<GlobalState> {
           distance: 10,
           scale: 500,
           mode: GlobalMode.threeDimensional,
+          showBackgroundLines: true,
         ));
 
   void updateAngles({double? angleX, double? angleY}) {
@@ -42,6 +43,10 @@ class GlobalCubit extends Cubit<GlobalState> {
     emit(state.copyWith(mode: mode));
   }
 
+  void updateShow(bool showBackgroundLines) {
+    emit(state.copyWith(showBackgroundLines: showBackgroundLines));
+  }
+
   void resetChanges() {
     emit(GlobalInitial(
       angleX: 0,
@@ -49,6 +54,7 @@ class GlobalCubit extends Cubit<GlobalState> {
       distance: 10,
       scale: 500,
       mode: state.mode,
+      showBackgroundLines: true,
     ));
   }
 }

@@ -1,4 +1,4 @@
-part of editor_menus;
+part of editor_menu;
 
 class ScaleMenu extends StatelessWidget {
   const ScaleMenu({super.key});
@@ -10,8 +10,19 @@ class ScaleMenu extends StatelessWidget {
       );
 }
 
-class ScaleMenuForm extends StatelessWidget {
+class ScaleMenuForm extends StatefulWidget {
   const ScaleMenuForm({super.key});
+
+  @override
+  State<ScaleMenuForm> createState() => _ScaleMenuFormState();
+}
+
+class _ScaleMenuFormState extends State<ScaleMenuForm> {
+  late final TextEditingController _xController;
+  late final TextEditingController _yController;
+  late final TextEditingController _zController;
+
+  late final GlobalKey<FormState> _formKey;
 
   void applyChanges(BuildContext context) {
     final group = context.read<ProjectBloc>().state.group;
@@ -22,8 +33,30 @@ class ScaleMenuForm extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) =>
-      BlocBuilder<ScaleCubit, ScaleState>(builder: builder);
+  void initState() {
+    _formKey = GlobalKey<FormState>();
+
+    final state = BlocProvider.of<ScaleCubit>(context, listen: false).state;
+
+    _xController = TextEditingController(text: state.x.toString());
+    _yController = TextEditingController(text: state.y.toString());
+    _zController = TextEditingController(text: state.z.toString());
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _xController.dispose();
+    _yController.dispose();
+    _zController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => BlocConsumer<ScaleCubit, ScaleState>(
+        builder: builder,
+        listener: listener,
+      );
 
   Widget builder(BuildContext context, ScaleState state) {
     final ColorScheme colorScheme = Theme.of(context).colorScheme;
@@ -32,92 +65,118 @@ class ScaleMenuForm extends StatelessWidget {
     final GlobalMode mode = context.select<GlobalCubit, GlobalMode>(
       (bloc) => bloc.state.mode,
     );
-    return ListView(
-      children: [
-        Divider(color: colorScheme.tertiary),
-        Text(
-          'Масштабирование группы',
-          style: textTheme.titleMedium
-              ?.copyWith(color: colorScheme.onTertiaryContainer),
-          textAlign: TextAlign.center,
-        ),
-        Divider(color: colorScheme.tertiary),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Text(
-            'X: ${state.x.toStringAsFixed(2)}',
-            style: textTheme.bodyMedium
+    return Form(
+      key: _formKey,
+      child: ListView(
+        children: [
+          Divider(color: colorScheme.tertiary),
+          Text(
+            'Масштабирование группы',
+            style: textTheme.titleMedium
                 ?.copyWith(color: colorScheme.onTertiaryContainer),
+            textAlign: TextAlign.center,
           ),
-        ),
-        Slider(
-          value: state.x,
-          min: 0.01,
-          max: 2,
-          activeColor: colorScheme.tertiary,
-          inactiveColor: colorScheme.onTertiary,
-          onChanged: (value) => context.read<ScaleCubit>().update(x: value),
-        ),
-        Divider(color: colorScheme.tertiary),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Text(
-            'Y: ${state.y.toStringAsFixed(2)}',
-            style: textTheme.bodyMedium
+          Divider(color: colorScheme.tertiary),
+          DoubleFormField(
+            padding: const EdgeInsets.all(8.0),
+            title: 'X: ',
+            titleStyle: textTheme.bodyMedium
                 ?.copyWith(color: colorScheme.onTertiaryContainer),
+            controller: _xController,
+            min: 0.01,
+            max: 2,
+            onChanged: (value) => context.read<ScaleCubit>().update(x: value),
           ),
-        ),
-        Slider(
-          value: state.y,
-          min: 0.01,
-          max: 2,
-          activeColor: colorScheme.tertiary,
-          inactiveColor: colorScheme.onTertiary,
-          onChanged: (value) => context.read<ScaleCubit>().update(y: value),
-        ),
-        Visibility(
-          visible: mode == GlobalMode.threeDimensional,
-          child: Wrap(
-            children: [
-              Divider(color: colorScheme.tertiary),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  'Z: ${state.z.toStringAsFixed(2)}',
-                  style: textTheme.bodyMedium
+          Slider(
+            value: state.x,
+            min: 0.01,
+            max: 2,
+            activeColor: colorScheme.tertiary,
+            inactiveColor: colorScheme.onTertiary,
+            onChanged: (value) => context.read<ScaleCubit>().update(x: value),
+          ),
+          Divider(color: colorScheme.tertiary),
+          DoubleFormField(
+            padding: const EdgeInsets.all(8.0),
+            title: 'Y: ',
+            titleStyle: textTheme.bodyMedium
+                ?.copyWith(color: colorScheme.onTertiaryContainer),
+            controller: _yController,
+            min: 0.01,
+            max: 2,
+            onChanged: (value) => context.read<ScaleCubit>().update(y: value),
+          ),
+          Slider(
+            value: state.y,
+            min: 0.01,
+            max: 2,
+            activeColor: colorScheme.tertiary,
+            inactiveColor: colorScheme.onTertiary,
+            onChanged: (value) => context.read<ScaleCubit>().update(y: value),
+          ),
+          Visibility(
+            visible: mode == GlobalMode.threeDimensional,
+            child: Wrap(
+              children: [
+                Divider(color: colorScheme.tertiary),
+                DoubleFormField(
+                  padding: const EdgeInsets.all(8.0),
+                  title: 'Z: ',
+                  titleStyle: textTheme.bodyMedium
                       ?.copyWith(color: colorScheme.onTertiaryContainer),
+                  controller: _zController,
+                  min: 0.01,
+                  max: 2,
+                  onChanged: (value) =>
+                      context.read<ScaleCubit>().update(z: value),
                 ),
-              ),
-              Slider(
-                value: state.z,
-                min: 0.01,
-                max: 2,
-                activeColor: colorScheme.tertiary,
-                inactiveColor: colorScheme.onTertiary,
-                onChanged: (value) =>
-                    context.read<ScaleCubit>().update(z: value),
-              ),
-            ],
+                Slider(
+                  value: state.z,
+                  min: 0.01,
+                  max: 2,
+                  activeColor: colorScheme.tertiary,
+                  inactiveColor: colorScheme.onTertiary,
+                  onChanged: (value) =>
+                      context.read<ScaleCubit>().update(z: value),
+                ),
+              ],
+            ),
           ),
-        ),
-        Divider(color: colorScheme.tertiary),
-        MaterialButton(
-          onPressed: () => applyChanges(context),
-          child: Text(
-            'Применить',
-            style: textTheme.bodyMedium,
+          Divider(color: colorScheme.tertiary),
+          MaterialButton(
+            onPressed: () {
+              if (!_formKey.currentState!.validate()) return;
+
+              applyChanges(context);
+            },
+            child: Text(
+              'Применить',
+              style: textTheme.bodyMedium,
+            ),
           ),
-        ),
-        Divider(color: colorScheme.tertiary),
-        MaterialButton(
-          onPressed: () => context.read<ScaleCubit>().resetChanges(),
-          child: Text(
-            'Сброс',
-            style: textTheme.bodyMedium,
+          Divider(color: colorScheme.tertiary),
+          MaterialButton(
+            onPressed: () => context.read<ScaleCubit>().resetChanges(),
+            child: Text(
+              'Сброс',
+              style: textTheme.bodyMedium,
+            ),
           ),
-        ),
-        Divider(color: colorScheme.tertiary),
-      ],
+          Divider(color: colorScheme.tertiary),
+        ],
+      ),
     );
+  }
+
+  void listener(BuildContext context, ScaleState state) {
+    if (_xController.text != state.x.toStringAsFixed(3)) {
+      _xController.text = state.x.toStringAsFixed(3);
+    }
+    if (_yController.text != state.y.toStringAsFixed(3)) {
+      _yController.text = state.y.toStringAsFixed(3);
+    }
+    if (_zController.text != state.z.toStringAsFixed(3)) {
+      _zController.text = state.z.toStringAsFixed(3);
+    }
   }
 }

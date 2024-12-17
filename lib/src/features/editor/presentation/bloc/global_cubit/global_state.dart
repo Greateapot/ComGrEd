@@ -21,6 +21,7 @@ sealed class GlobalState extends Equatable {
   final double distance;
   final double scale;
 
+  final bool showBackgroundLines;
   final GlobalMode mode;
 
   const GlobalState({
@@ -29,6 +30,7 @@ sealed class GlobalState extends Equatable {
     required this.distance,
     required this.scale,
     required this.mode,
+    required this.showBackgroundLines,
   });
 
   GlobalState copyWith({
@@ -37,10 +39,18 @@ sealed class GlobalState extends Equatable {
     double? distance,
     double? scale,
     GlobalMode? mode,
+    bool? showBackgroundLines,
   });
 
   @override
-  List<Object> get props => [angleX, angleY, distance, scale, mode];
+  List<Object> get props => [
+        angleX,
+        angleY,
+        distance,
+        scale,
+        mode,
+        showBackgroundLines,
+      ];
 }
 
 final class GlobalInitial extends GlobalState {
@@ -50,6 +60,7 @@ final class GlobalInitial extends GlobalState {
     required super.distance,
     required super.scale,
     required super.mode,
+    required super.showBackgroundLines,
   });
 
   @override
@@ -59,6 +70,7 @@ final class GlobalInitial extends GlobalState {
     double? distance,
     double? scale,
     GlobalMode? mode,
+    bool? showBackgroundLines,
   }) =>
       GlobalInitial(
         angleX: angleX ?? this.angleX,
@@ -66,5 +78,6 @@ final class GlobalInitial extends GlobalState {
         distance: distance ?? this.distance,
         scale: scale ?? this.scale,
         mode: mode ?? this.mode,
+        showBackgroundLines: showBackgroundLines ?? this.showBackgroundLines,
       );
 }

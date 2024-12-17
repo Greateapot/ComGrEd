@@ -71,7 +71,7 @@ class _EditorViewState extends State<EditorView> {
         color: colorScheme.primaryContainer,
         border: Border.all(color: colorScheme.onPrimaryContainer),
       ),
-      child: const RepaintBoundary(child: EditorPaint()),
+      child: const ClipRect(child: RepaintBoundary(child: EditorPaint())),
     );
   }
 
@@ -110,6 +110,10 @@ class _EditorViewState extends State<EditorView> {
           EditorMenuViewData(
             icon: const Icon(Icons.ac_unit_outlined),
             builder: (context) => const MirrorMenu(),
+          ),
+          EditorMenuViewData(
+            icon: const Icon(Icons.ac_unit_outlined),
+            builder: (context) => const ProjectionMenu(),
           ),
         ],
       ),

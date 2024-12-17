@@ -48,25 +48,25 @@ class EditorLineListView extends StatelessWidget {
             ),
           ),
         ),
+        Divider(color: colorScheme.secondary),
         Expanded(
-          child: ListView.builder(
-            itemCount: state.lines.length + 1,
+          child: ListView.separated(
+            itemCount: state.lines.length,
             itemBuilder: (context, index) {
-              final line = state.lines.elementAtOrNull(index);
+              final line = state.lines[index];
+              final isSelected = state.group.contains(line);
 
-              if (line == null) {
-                return const EditorLineTile(isAdd: true);
-              } else {
-                final isSelected = state.group.contains(line);
-
-                return EditorLineTile(
-                  line: line,
-                  isSelected: isSelected,
-                );
-              }
+              return EditorLineTile(
+                line: line,
+                isSelected: isSelected,
+              );
             },
+            separatorBuilder: (context, index) =>
+                Divider(color: colorScheme.secondary),
           ),
         ),
+        Divider(color: colorScheme.secondary),
+        const EditorLineTile(isAdd: true),
       ],
     );
   }

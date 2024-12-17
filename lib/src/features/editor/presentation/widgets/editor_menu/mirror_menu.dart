@@ -1,4 +1,4 @@
-part of editor_menus;
+part of editor_menu;
 
 class MirrorMenu extends StatelessWidget {
   const MirrorMenu({super.key});

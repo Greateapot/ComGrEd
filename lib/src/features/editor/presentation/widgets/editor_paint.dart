@@ -1,3 +1,4 @@
+import 'package:comgred/src/core/extensions/double_extension.dart';
 import 'package:comgred/src/features/editor/data/models/models.dart';
 import 'package:comgred/src/features/editor/presentation/bloc/bloc.dart';
 import 'package:comgred/src/features/editor/presentation/widgets/widgets.dart';
@@ -17,32 +18,32 @@ class _EditorPaintState extends State<EditorPaint> {
   late final FocusNode _focusNode;
   final double onKeyEventStep = 5;
 
-  final List<Line> _fgPainter2D = <Line>[
+  final List<Line> _backgroundLines2 = <Line>[
     Line(
-      firstPoint: Point(x: 0, y: 0, z: 0),
+      firstPoint: Point(x: -10000, y: 0, z: 0),
       lastPoint: Point(x: 10000, y: 0, z: 0),
       color: Colors.redAccent,
     ),
     Line(
-      firstPoint: Point(x: 0, y: 0, z: 0),
+      firstPoint: Point(x: 0, y: -10000, z: 0),
       lastPoint: Point(x: 0, y: 10000, z: 0),
       color: Colors.greenAccent,
     ),
   ];
 
-  final List<Line> _fgPainter3D = <Line>[
+  final List<Line> _backgroundLines3 = <Line>[
     Line(
-      firstPoint: Point(x: 0, y: 0, z: 0),
+      firstPoint: Point(x: -10000, y: 0, z: 0),
       lastPoint: Point(x: 10000, y: 0, z: 0),
       color: Colors.redAccent,
     ),
     Line(
-      firstPoint: Point(x: 0, y: 0, z: 0),
+      firstPoint: Point(x: 0, y: -10000, z: 0),
       lastPoint: Point(x: 0, y: 10000, z: 0),
       color: Colors.greenAccent,
     ),
     Line(
-      firstPoint: Point(x: 0, y: 0, z: 0),
+      firstPoint: Point(x: 0, y: 0, z: -10000),
       lastPoint: Point(x: 0, y: 0, z: 10000),
       color: Colors.blueAccent,
     ),
@@ -74,7 +75,7 @@ class _EditorPaintState extends State<EditorPaint> {
 
   void onPointerSignal(BuildContext context, PointerSignalEvent event) {
     if (event is! PointerScrollEvent) return;
-    setScale(context, event.scrollDelta.dy);
+    setScale(context, event.scrollDelta.dy / 10);
   }
 
   void onPanUpdate(BuildContext context, DragUpdateDetails details) {
@@ -126,62 +127,50 @@ class _EditorPaintState extends State<EditorPaint> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Builder(
-      builder: (context) {
-        final ProjectState projectState = context.watch<ProjectBloc>().state;
-        final GlobalState globalState = context.watch<GlobalCubit>().state;
+  Widget build(BuildContext context) => Builder(builder: builder);
 
-        final MediaQueryData mediaQueryData = MediaQuery.of(context);
+  Widget builder(BuildContext context) {
+    final projectState = context.watch<ProjectBloc>().state;
+    final globalState = context.watch<GlobalCubit>().state;
 
-        late Widget child;
-
-        if (globalState.mode == GlobalMode.threeDimensional) {
-          child = CustomPaint(
-            size: mediaQueryData.size,
-            foregroundPainter: EditorPainter3D(
-              lines: projectState.lines,
-              group: projectState.group,
-              angleX: globalState.angleX,
-              angleY: globalState.angleY,
-              scale: globalState.scale,
-              distance: globalState.distance,
-              version: projectState.version,
-            ),
-            painter: EditorPainter3D(
-              lines: _fgPainter3D,
-              angleX: globalState.angleX,
-              angleY: globalState.angleY,
-              scale: globalState.scale,
-              distance: globalState.distance,
-              version: projectState.version,
-            ),
+    final matrix = globalState.mode == GlobalMode.threeDimensional
+        ? EditorPainterMatrices.getComplexMatrix3(
+            globalState.angleY.toRadians(),
+            globalState.angleX.toRadians(),
+            globalState.scale,
+            globalState.distance,
+          )
+        : EditorPainterMatrices.getComplexMatrix2(
+            globalState.angleX.toRadians(),
+            globalState.scale,
           );
-        } else {
-          child = CustomPaint(
-            size: mediaQueryData.size,
-            foregroundPainter: EditorPainter2D(
-              lines: projectState.lines,
-              group: projectState.group,
-              angle: globalState.angleX,
-              scale: globalState.scale,
-              version: projectState.version,
-            ),
-            painter: EditorPainter2D(
-              lines: _fgPainter2D,
-              angle: 0,
-              scale: globalState.scale,
-              version: projectState.version,
-            ),
-          );
-        }
 
-        if (true) child = withKeyEvents(context, child);
-        if (true) child = withPointerSignal(context, child);
-        if (true) child = withPanUpdate(context, child);
-        return child;
-      },
+    final backgroundLines = globalState.mode == GlobalMode.threeDimensional
+        ? _backgroundLines3
+        : _backgroundLines2;
+
+    Widget child = CustomPaint(
+      size: MediaQuery.sizeOf(context),
+      foregroundPainter: EditorPainter(
+        lines: projectState.lines,
+        group: projectState.group,
+        matrix: matrix,
+        version: projectState.version,
+      ),
+      painter: globalState.showBackgroundLines
+          ? EditorPainter(
+              lines: backgroundLines,
+              matrix: matrix,
+              version: projectState.version,
+            )
+          : null,
     );
+
+    /// maybe flags?
+    if (true) child = withKeyEvents(context, child);
+    if (true) child = withPointerSignal(context, child);
+    if (true) child = withPanUpdate(context, child);
+    return child;
   }
 
   Widget withPanUpdate(BuildContext context, Widget child) {

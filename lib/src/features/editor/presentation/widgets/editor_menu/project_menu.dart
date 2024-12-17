@@ -1,4 +1,4 @@
-part of editor_menus;
+part of editor_menu;
 
 class SaveloadMenu extends StatelessWidget {
   const SaveloadMenu({super.key});
