@@ -1,5 +1,6 @@
 enum AppRoute {
-  test('/test');
+  tree('/tree'),
+  editor('/editor');
 
   const AppRoute(this.path);
 

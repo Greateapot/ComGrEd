@@ -1,5 +1,7 @@
 import 'package:comgred/src/features/editor/presentation/presentation.dart';
+import 'package:comgred/src/routes/app_route_path.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:multi_split_view/multi_split_view.dart';
 
 class EditorView extends StatefulWidget {
@@ -33,8 +35,23 @@ class _EditorViewState extends State<EditorView> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: colorScheme.secondaryContainer,
+        title: Text(
+          'Graphical Editor',
+          style: textTheme.titleMedium,
+        ),
+        leading: IconButton.outlined(
+          onPressed: () => context.goNamed(AppRoute.tree.name),
+          icon: Icon(
+            Icons.swap_horiz_outlined,
+            color: colorScheme.primary,
+          ),
+        ),
+      ),
       body: MultiSplitViewTheme(
         data: MultiSplitViewThemeData(
           dividerPainter: DividerPainters.grooved1(

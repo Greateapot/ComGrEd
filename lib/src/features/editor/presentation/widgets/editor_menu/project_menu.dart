@@ -5,6 +5,10 @@ class SaveloadMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return BlocBuilder<GlobalCubit, GlobalState>(builder: builder);
+  }
+
+  Widget builder(BuildContext context, GlobalState state) {
     final TextTheme textTheme = Theme.of(context).textTheme;
     final ColorScheme colorScheme = Theme.of(context).colorScheme;
 
@@ -20,7 +24,14 @@ class SaveloadMenu extends StatelessWidget {
         Divider(color: colorScheme.tertiary),
         MaterialButton(
           onPressed: () =>
-              context.read<ProjectBloc>().add(const ProjectSaveProjectEvent()),
+              context.read<ProjectBloc>().add(ProjectSaveProjectEvent(
+                    distance: state.distance,
+                    scale: state.scale,
+                    angleX: state.angleX,
+                    angleY: state.angleY,
+                    show: state.showBackgroundLines,
+                    is2d: state.mode == GlobalMode.twoDimensional,
+                  )),
           child: Text(
             'Сохранить проект',
             style: textTheme.bodyMedium,
@@ -29,7 +40,18 @@ class SaveloadMenu extends StatelessWidget {
         Divider(color: colorScheme.tertiary),
         MaterialButton(
           onPressed: () =>
-              context.read<ProjectBloc>().add(const ProjectLoadProjectEvent()),
+              context.read<ProjectBloc>().add(ProjectLoadProjectEvent(
+            callback: (angleX, angleY, distance, scale, show, is2d) {
+              final cubit = context.read<GlobalCubit>();
+              cubit.updateAngles(angleX: angleX, angleY: angleY);
+              cubit.updateDistance(distance);
+              cubit.updateScale(scale);
+              cubit.updateMode(
+                is2d ? GlobalMode.twoDimensional : GlobalMode.threeDimensional,
+              );
+              cubit.updateShow(show);
+            },
+          )),
           child: Text(
             'Загрузить проект',
             style: textTheme.bodyMedium,

@@ -105,7 +105,16 @@ class ProjectBloc extends Bloc<ProjectEvent, ProjectState> {
 
     final file = File(path);
     final json = state.lines.map((line) => line.toJson()).toList();
-    final string = jsonEncode(json);
+    final Map<String, dynamic> data = {
+      'lines': json,
+      'distance': event.distance,
+      'scale': event.scale,
+      'angleX': event.angleX,
+      'angleY': event.angleY,
+      'show': event.show,
+      'is2d': event.is2d,
+    };
+    final string = jsonEncode(data);
 
     await file.writeAsString(string);
   }
@@ -122,8 +131,20 @@ class ProjectBloc extends Bloc<ProjectEvent, ProjectState> {
     assert(await file.exists());
 
     final string = await file.readAsString();
-    final json = jsonDecode(string) as List<dynamic>;
+    final data = jsonDecode(string) as Map<String, dynamic>;
+    final json = data['lines'] as List<dynamic>;
     final lines = json.map((json) => Line.fromJson(json)).toList();
+
+    if (event.callback != null) {
+      event.callback!(
+        data['angleX'],
+        data['angleY'],
+        data['distance'],
+        data['scale'],
+        data['show'],
+        data['is2d'],
+      );
+    }
 
     emit(ProjectInitial.defaults(
       lines: lines,

@@ -20,12 +20,12 @@ class _EditorPaintState extends State<EditorPaint> {
 
   final List<Line> _backgroundLines2 = <Line>[
     Line(
-      firstPoint: Point(x: -10000, y: 0, z: 0),
+      firstPoint: Point(x: 0, y: 0, z: 0),
       lastPoint: Point(x: 10000, y: 0, z: 0),
       color: Colors.redAccent,
     ),
     Line(
-      firstPoint: Point(x: 0, y: -10000, z: 0),
+      firstPoint: Point(x: 0, y: 0, z: 0),
       lastPoint: Point(x: 0, y: 10000, z: 0),
       color: Colors.greenAccent,
     ),
@@ -33,17 +33,17 @@ class _EditorPaintState extends State<EditorPaint> {
 
   final List<Line> _backgroundLines3 = <Line>[
     Line(
-      firstPoint: Point(x: -10000, y: 0, z: 0),
+      firstPoint: Point(x: 0, y: 0, z: 0),
       lastPoint: Point(x: 10000, y: 0, z: 0),
       color: Colors.redAccent,
     ),
     Line(
-      firstPoint: Point(x: 0, y: -10000, z: 0),
+      firstPoint: Point(x: 0, y: 0, z: 0),
       lastPoint: Point(x: 0, y: 10000, z: 0),
       color: Colors.greenAccent,
     ),
     Line(
-      firstPoint: Point(x: 0, y: 0, z: -10000),
+      firstPoint: Point(x: 0, y: 0, z: 0),
       lastPoint: Point(x: 0, y: 0, z: 10000),
       color: Colors.blueAccent,
     ),

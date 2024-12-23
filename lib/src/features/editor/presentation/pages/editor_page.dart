@@ -5,8 +5,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'editor_view.dart';
 
-class TestPage extends StatelessWidget {
-  const TestPage({super.key});
+class EditorPage extends StatelessWidget {
+  const EditorPage({super.key});
 
   @override
   Widget build(BuildContext context) {

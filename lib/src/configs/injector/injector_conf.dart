@@ -6,8 +6,7 @@ final getIt = GetIt.I;
 
 void configureDepedencies() {
   EditorDependency.init();
+  TreeDependency.init();
 
-  getIt.registerLazySingleton(
-    () => AppRouteConf(),
-  );
+  getIt.registerLazySingleton(() => AppRouteConf());
 }

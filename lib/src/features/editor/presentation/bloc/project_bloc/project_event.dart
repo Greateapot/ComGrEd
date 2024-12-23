@@ -16,6 +16,7 @@ final class ProjectAddLineEvent extends ProjectEvent {
   @override
   List<Object?> get props => [line];
 }
+
 final class ProjectAddLinesEvent extends ProjectEvent {
   const ProjectAddLinesEvent({required this.lines});
 
@@ -60,11 +61,41 @@ final class ProjectRebuildEvent extends ProjectEvent {
 //? ----------- SAVE / LOAD / CLOSE -----------
 
 final class ProjectSaveProjectEvent extends ProjectEvent {
-  const ProjectSaveProjectEvent();
+  final double distance;
+  final double scale;
+  final double angleX;
+  final double angleY;
+
+  final bool show;
+  final bool is2d;
+
+  const ProjectSaveProjectEvent({
+    required this.distance,
+    required this.scale,
+    required this.angleX,
+    required this.angleY,
+    required this.show,
+    required this.is2d,
+  });
+
+  @override
+  List<Object?> get props => [distance, scale, angleX, angleY, show, is2d];
 }
 
 final class ProjectLoadProjectEvent extends ProjectEvent {
-  const ProjectLoadProjectEvent();
+  final void Function(
+    double distance,
+    double scale,
+    double angleX,
+    double angleY,
+    bool show,
+    bool is2d,
+  )? callback;
+
+  const ProjectLoadProjectEvent({required this.callback});
+
+  @override
+  List<Object?> get props => [callback];
 }
 
 final class ProjectCloseProjectEvent extends ProjectEvent {

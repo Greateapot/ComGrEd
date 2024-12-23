@@ -13,7 +13,7 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_bloc: ^8.1.6
-  get_it: ^8.0.2
+  get_it: ^7.2.0
   go_router: ^14.6.2
   json_annotation: ^4.9.0
   logger: ^2.5.0
@@ -30,6 +30,22 @@ dev_dependencies:
   flutter_lints: ^4.0.0
   build_runner: ^2.4.13
   json_serializable: ^6.9.0
+  msix: ^3.16.8
+
 
 flutter:
   uses-material-design: true
+
+
+msix_config:
+  display_name: ComGrEd
+  publisher_display_name: Greateapot
+  identity_name: re.greateapot.ComGrEd
+  msix_version: 1.0.0.0
+  logo_path: .\assets\logo.png
+  start_menu_icon_path: .\assets\logo.png
+  tile_icon_path: .\assets\logo.png
+  icons_background_color: transparent
+  architecture: x64
+  languages: ru-RU
+  build_windows: false
